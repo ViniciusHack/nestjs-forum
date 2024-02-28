@@ -15,7 +15,7 @@ export type RegisterStudentsUseCaseResponse = Either<
   { student: Student }
 >
 
-export class CreateStudentUseCase {
+export class RegisterStudentUseCase {
   constructor(
     private studentRepository: StudentRepository,
     private hashGenerator: HashGenerator,
@@ -32,7 +32,7 @@ export class CreateStudentUseCase {
       return left(new StudentAlreadyExistsError(data.email))
     }
 
-    const hashedPassword = await this.hashGenerator.generate(data.password)
+    const hashedPassword = await this.hashGenerator.hash(data.password)
 
     const student = Student.create({
       name: data.name,
