@@ -1,8 +1,9 @@
 import { Either, left, right } from '@/core/either'
 import { NotAllowedError } from '@/core/errors/not-allowed-error'
+import { Injectable } from '@nestjs/common'
 import { Encoder } from '../cryptography/encoder'
 import { HashComparer } from '../cryptography/hash-comparer'
-import { StudentRepository } from '../repositories/student-repository'
+import { StudentsRepository } from '../repositories/student-repository'
 import { InvalidCredentialsError } from './errors/invalid-credentials-error'
 
 interface AuthenticateStudentUseCaseRequest {
@@ -17,9 +18,10 @@ export type AuthenticateStudentUseCaseResponse = Either<
   }
 >
 
+@Injectable()
 export class AuthenticateStudentUseCase {
   constructor(
-    private studentRepository: StudentRepository,
+    private studentRepository: StudentsRepository,
     private hashComparer: HashComparer,
     private tokenGenerator: Encoder,
   ) {}
@@ -42,7 +44,9 @@ export class AuthenticateStudentUseCase {
       return left(new InvalidCredentialsError())
     }
 
-    const accessToken = await this.tokenGenerator.encrypt(student.id.toString())
+    const accessToken = await this.tokenGenerator.encrypt({
+      sub: student.id.toString(),
+    })
 
     return right({
       accessToken,
