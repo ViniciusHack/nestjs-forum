@@ -17,4 +17,16 @@ export class PrismaAnswerCommentMapper {
       new UniqueEntityID(raw.id),
     )
   }
+
+  static toPersistence(comment: AnswerComment): Comment {
+    return {
+      id: comment.id.toString(),
+      content: comment.content,
+      authorId: comment.authorId.toString(),
+      answerId: comment.answerId.toString(),
+      questionId: null,
+      createdAt: comment.createdAt,
+      updatedAt: comment.updatedAt ?? null,
+    }
+  }
 }
