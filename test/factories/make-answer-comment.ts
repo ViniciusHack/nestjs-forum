@@ -3,7 +3,10 @@ import {
   AnswerComment,
   AnswerCommentProps,
 } from '@/domain/forum/enterprise/entities/answer-comment'
+import { PrismaService } from '@/infra/database/prisma/prisma.service'
+import { PrismaAnswerCommentMapper } from '@/infra/database/prisma/prisma/prisma-answer-comment-mapper'
 import { faker } from '@faker-js/faker'
+import { Injectable } from '@nestjs/common'
 
 export function makeAnswerComment(
   override: Partial<AnswerCommentProps> = {},
@@ -20,4 +23,18 @@ export function makeAnswerComment(
   )
 
   return answer
+}
+
+@Injectable()
+export class AnswerCommentFactory {
+  constructor(private prisma: PrismaService) {}
+  async makePrismaAnswerComment(data: Partial<AnswerCommentProps> = {}) {
+    const answerComment = makeAnswerComment(data)
+
+    await this.prisma.comment.create({
+      data: PrismaAnswerCommentMapper.toPersistence(answerComment),
+    })
+
+    return answerComment
+  }
 }
