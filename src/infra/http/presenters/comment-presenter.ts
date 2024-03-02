@@ -1,13 +1,12 @@
-import { QuestionComment } from '@/domain/forum/enterprise/entities/question-comment'
+import { Comment } from '@/domain/forum/enterprise/entities/comment'
 
-export class QuestionCommentPresenter {
-  static toHTTP(questionComment: QuestionComment) {
+export class CommentPresenter {
+  static toHTTP(comment: Comment<any>) {
     return {
-      id: questionComment.id.toString(),
-      content: questionComment.content,
-      authorId: questionComment.authorId.toString(),
-      questionId: questionComment.questionId.toString(),
-      createdAt: questionComment.createdAt.toISOString(),
+      id: comment.id.toString(),
+      content: comment.content,
+      authorId: comment.authorId.toString(),
+      createdAt: comment.createdAt.toISOString(),
     }
   }
 }
