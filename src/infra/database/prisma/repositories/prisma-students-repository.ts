@@ -1,4 +1,4 @@
-import { StudentsRepository } from '@/domain/forum/application/repositories/student-repository'
+import { StudentsRepository } from '@/domain/forum/application/repositories/students-repository'
 import { Student } from '@/domain/forum/enterprise/entities/student'
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from '../prisma.service'

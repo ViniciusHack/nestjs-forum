@@ -1,8 +1,10 @@
 import { Uploader } from '@/domain/forum/application/storage/uploader'
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
+import { Injectable } from '@nestjs/common'
 import { randomUUID } from 'node:crypto'
 import { EnvService } from '../env/env.service'
 
+@Injectable()
 export class R2Storage implements Uploader {
   private client: S3Client
 

@@ -1,4 +1,7 @@
+import { left } from '@/core/either'
+import { UploadAndCreateAttachmentUseCase } from '@/domain/forum/application/use-cases/upload-and-create-attachment'
 import {
+  BadRequestException,
   Controller,
   FileTypeValidator,
   MaxFileSizeValidator,
@@ -11,6 +14,10 @@ import { FileInterceptor } from '@nestjs/platform-express'
 
 @Controller('/attachments')
 export class UploadAttachmentController {
+  constructor(
+    private readonly uploadAndCreateAttachmentUseCase: UploadAndCreateAttachmentUseCase,
+  ) {}
+
   @Post()
   @UseInterceptors(FileInterceptor('file'))
   async handle(
@@ -24,6 +31,17 @@ export class UploadAttachmentController {
     )
     file: Express.Multer.File,
   ) {
-    console.log(file)
+    const result = await this.uploadAndCreateAttachmentUseCase.execute({
+      body: file.buffer,
+      fileName: file.originalname,
+      fileType: file.mimetype,
+    })
+
+    if (result.isLeft()) {
+      return left(new BadRequestException())
+    }
+    const { attachment } = result.value
+
+    return { attachmentId: attachment.id.toString() }
   }
 }

@@ -38,10 +38,6 @@ describe('Upload Attachment (E2E)', () => {
     // .send()
 
     expect(response.statusCode).toEqual(201)
-    // expect(response.body).toEqual({
-    //   question: expect.objectContaining({
-    //     title: 'Question 01',
-    //   }),
-    // })
+    expect(response.body.attachmentId).toEqual(expect.any(String))
   })
 })

@@ -3,7 +3,7 @@ import { NotAllowedError } from '@/core/errors/not-allowed-error'
 import { Injectable } from '@nestjs/common'
 import { Encoder } from '../cryptography/encoder'
 import { HashComparer } from '../cryptography/hash-comparer'
-import { StudentsRepository } from '../repositories/student-repository'
+import { StudentsRepository } from '../repositories/students-repository'
 import { InvalidCredentialsError } from './errors/invalid-credentials-error'
 
 interface AuthenticateStudentUseCaseRequest {
