@@ -14,6 +14,7 @@ import { z } from 'zod'
 const createQuestionBodySchema = z.object({
   title: z.string(),
   content: z.string(),
+  attachments: z.array(z.string().uuid()),
 })
 
 const bodyValidationPipe = new ZodValidationPipe(createQuestionBodySchema)
@@ -30,11 +31,11 @@ export class CreateQuestionController {
     @CurrentUser() user: UserPayload,
     @Body(bodyValidationPipe) body: CreateQuestionBodySchema,
   ) {
-    const { title, content } = body
+    const { title, content, attachments } = body
     const { sub: userId } = user
 
     const result = await this.createQuestion.execute({
-      attachmentsIds: [],
+      attachmentsIds: attachments,
       authorId: userId,
       content,
       title,

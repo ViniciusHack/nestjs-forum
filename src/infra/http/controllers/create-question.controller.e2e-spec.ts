@@ -4,11 +4,13 @@ import { INestApplication } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { Test } from '@nestjs/testing'
 import request from 'supertest'
+import { AttachmentFactory } from 'test/factories/make-attachment'
 import { StudentFactory } from 'test/factories/make-student'
 
 describe('Create question (E2E)', () => {
   let app: INestApplication
   let studentFactory: StudentFactory
+  let attachmentFactory: AttachmentFactory
   let prisma: PrismaService
 
   let jwt: JwtService
@@ -17,13 +19,14 @@ describe('Create question (E2E)', () => {
     // Run application for tests
     const moduleRef = await Test.createTestingModule({
       imports: [AppModule],
-      providers: [PrismaService, StudentFactory],
+      providers: [PrismaService, StudentFactory, AttachmentFactory],
     }).compile()
 
     app = moduleRef.createNestApplication()
 
     jwt = moduleRef.get(JwtService)
     studentFactory = moduleRef.get(StudentFactory)
+    attachmentFactory = moduleRef.get(AttachmentFactory)
     prisma = moduleRef.get(PrismaService)
 
     await app.init()
@@ -34,12 +37,16 @@ describe('Create question (E2E)', () => {
 
     const accessToken = jwt.sign({ sub: student.id.toString() })
 
+    const attachment1 = await attachmentFactory.makePrismaAttachment()
+    const attachment2 = await attachmentFactory.makePrismaAttachment()
+
     const response = await request(app.getHttpServer())
       .post('/questions')
       .set('Authorization', `Bearer ${accessToken}`)
       .send({
         title: 'New question',
         content: 'Question content',
+        attachments: [attachment1.id.toString(), attachment2.id.toString()],
       })
 
     expect(response.statusCode).toEqual(201)
@@ -51,5 +58,19 @@ describe('Create question (E2E)', () => {
     })
 
     expect(questionOnDatabase).toBeTruthy()
+
+    const questionAttachmentsOnDatabase = await prisma.attachment.findMany({
+      where: {
+        questionId: questionOnDatabase?.id,
+      },
+    })
+
+    expect(questionAttachmentsOnDatabase).toHaveLength(2)
+    expect(questionAttachmentsOnDatabase).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: attachment1.id.toString() }),
+        expect.objectContaining({ id: attachment2.id.toString() }),
+      ]),
+    )
   })
 })
