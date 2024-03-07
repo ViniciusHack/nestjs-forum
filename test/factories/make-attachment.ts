@@ -3,8 +3,8 @@ import {
   Attachment,
   AttachmentProps,
 } from '@/domain/forum/enterprise/entities/attachment'
+import { PrismaAttachmentMapper } from '@/infra/database/prisma/mappers/prisma-attachment-mapper'
 import { PrismaService } from '@/infra/database/prisma/prisma.service'
-import { PrismaAttachmentMapper } from '@/infra/database/prisma/prisma/prisma-attachment-mapper'
 import { faker } from '@faker-js/faker'
 import { Injectable } from '@nestjs/common'
 

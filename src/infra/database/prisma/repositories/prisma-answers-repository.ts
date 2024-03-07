@@ -1,13 +1,18 @@
 import { PaginationParams } from '@/core/repositories/pagination-params'
+import { AnswerAttachmentsRepository } from '@/domain/forum/application/repositories/answer-attachments-repository'
 import { AnswersRepository } from '@/domain/forum/application/repositories/answers-repository'
 import { Answer } from '@/domain/forum/enterprise/entities/answer'
 import { Injectable } from '@nestjs/common'
+import { PrismaAnswerMapper } from '../mappers/prisma-answer-mapper'
 import { PrismaService } from '../prisma.service'
-import { PrismaAnswerMapper } from '../prisma/prisma-answer-mapper'
 
 @Injectable()
 export class PrismaAnswersRepository implements AnswersRepository {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private answerAttachmentsRepository: AnswerAttachmentsRepository,
+  ) {}
+
   async findManyByQuestionId(
     questionId: string,
     params: PaginationParams,
@@ -28,6 +33,10 @@ export class PrismaAnswersRepository implements AnswersRepository {
     await this.prisma.answer.create({
       data: PrismaAnswerMapper.toPersistence(answer),
     })
+
+    await this.answerAttachmentsRepository.createMany(
+      answer.attachments.getItems(),
+    )
   }
 
   async delete(answer: Answer): Promise<void> {
@@ -42,6 +51,13 @@ export class PrismaAnswersRepository implements AnswersRepository {
       where: { id: data.id },
       data,
     })
+
+    await this.answerAttachmentsRepository.createMany(
+      answer.attachments.getNewItems(),
+    )
+    await this.answerAttachmentsRepository.deleteMany(
+      answer.attachments.getRemovedItems(),
+    )
   }
 
   async findById(id: string): Promise<Answer | null> {

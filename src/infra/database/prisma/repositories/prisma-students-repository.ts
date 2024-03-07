@@ -1,8 +1,8 @@
 import { StudentsRepository } from '@/domain/forum/application/repositories/students-repository'
 import { Student } from '@/domain/forum/enterprise/entities/student'
 import { Injectable } from '@nestjs/common'
+import { PrismaStudentMapper } from '../mappers/prisma-student-mapper'
 import { PrismaService } from '../prisma.service'
-import { PrismaStudentMapper } from '../prisma/prisma-student-mapper'
 
 @Injectable()
 export class PrismaStudentsRepository implements StudentsRepository {

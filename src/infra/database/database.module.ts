@@ -29,10 +29,6 @@ import { PrismaStudentsRepository } from './prisma/repositories/prisma-students-
       useClass: PrismaStudentsRepository,
     },
     {
-      provide: AnswerAttachmentsRepository,
-      useClass: PrismaAnswerAttachmentsRepository,
-    },
-    {
       provide: AnswerCommentsRepository,
       useClass: PrismaAnswerCommentsRepository,
     },
@@ -40,6 +36,10 @@ import { PrismaStudentsRepository } from './prisma/repositories/prisma-students-
     {
       provide: QuestionAttachmentsRepository,
       useClass: PrismaQuestionAttachmentsRepository,
+    },
+    {
+      provide: AnswerAttachmentsRepository,
+      useClass: PrismaAnswerAttachmentsRepository,
     },
     {
       provide: QuestionCommentsRepository,

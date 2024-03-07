@@ -23,7 +23,7 @@ describe('Edit answer', () => {
     )
   })
 
-  it('should be able to edit a answer', async () => {
+  it('should be able to edit an answer', async () => {
     const newAnswer = makeAnswer(
       {
         authorId: new UniqueEntityID('author-1'),
@@ -41,7 +41,7 @@ describe('Edit answer', () => {
       }),
       makeAnswerAttachment({
         answerId: newAnswer.id,
-        attachmentId: new UniqueEntityID('1'),
+        attachmentId: new UniqueEntityID('2'),
       }),
     )
 
@@ -55,19 +55,15 @@ describe('Edit answer', () => {
     expect(inMemoryAnswersRepository.items[0]).toMatchObject({
       content: 'new content',
     })
-    expect(
-      inMemoryAnswersRepository.items[0].attachments.currentItems,
-    ).toHaveLength(2)
-    expect(inMemoryAnswersRepository.items[0].attachments.currentItems).toEqual(
-      [
-        expect.objectContaining({
-          attachmentId: new UniqueEntityID('1'),
-        }),
-        expect.objectContaining({
-          attachmentId: new UniqueEntityID('3'),
-        }),
-      ],
-    )
+    expect(inMemoryAnswerAttachmentsRepository.items).toHaveLength(2)
+    expect(inMemoryAnswerAttachmentsRepository.items).toEqual([
+      expect.objectContaining({
+        attachmentId: new UniqueEntityID('1'),
+      }),
+      expect.objectContaining({
+        attachmentId: new UniqueEntityID('3'),
+      }),
+    ])
   })
 
   it('should not be able to edit a answer form another user', async () => {

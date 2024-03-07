@@ -21,24 +21,20 @@ describe('Create answer', () => {
     const result = await sut.execute({
       content: 'conteudo resposta',
       questionId: '123',
-      instructorId: '1234',
+      authorId: '1234',
       attachmentsIds: ['1', '2'],
     })
 
     expect(result.isRight()).toBe(true)
     expect(inMemoryAnswersRepository.items[0]).toEqual(result.value?.answer)
-    expect(
-      inMemoryAnswersRepository.items[0].attachments.currentItems,
-    ).toHaveLength(2)
-    expect(inMemoryAnswersRepository.items[0].attachments.currentItems).toEqual(
-      [
-        expect.objectContaining({
-          attachmentId: new UniqueEntityID('1'),
-        }),
-        expect.objectContaining({
-          attachmentId: new UniqueEntityID('2'),
-        }),
-      ],
-    )
+    expect(inMemoryAnswerAttachmentsRepository.items).toHaveLength(2)
+    expect(inMemoryAnswerAttachmentsRepository.items).toEqual([
+      expect.objectContaining({
+        attachmentId: new UniqueEntityID('1'),
+      }),
+      expect.objectContaining({
+        attachmentId: new UniqueEntityID('2'),
+      }),
+    ])
   })
 })

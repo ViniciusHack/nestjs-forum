@@ -3,8 +3,8 @@ import {
   QuestionComment,
   QuestionCommentProps,
 } from '@/domain/forum/enterprise/entities/question-comment'
+import { PrismaQuestionCommentMapper } from '@/infra/database/prisma/mappers/prisma-question-comment-mapper'
 import { PrismaService } from '@/infra/database/prisma/prisma.service'
-import { PrismaQuestionCommentMapper } from '@/infra/database/prisma/prisma/prisma-question-comment-mapper'
 import { faker } from '@faker-js/faker'
 import { Injectable } from '@nestjs/common'
 
