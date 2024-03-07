@@ -15,6 +15,7 @@ import { z } from 'zod'
 const editQuestionBodySchema = z.object({
   title: z.string(),
   content: z.string(),
+  attachments: z.array(z.string().uuid()),
 })
 
 const bodyValidationPipe = new ZodValidationPipe(editQuestionBodySchema)
@@ -33,10 +34,11 @@ export class EditQuestionController {
     @CurrentUser() user: UserPayload,
   ) {
     const result = await this.editQuestion.execute({
-      ...body,
+      title: body.title,
+      content: body.content,
       questionId,
       authorId: user.sub,
-      attachmentsIds: [],
+      attachmentsIds: body.attachments,
     })
 
     if (result.isLeft()) {
