@@ -20,7 +20,9 @@ describe('Fetch Question Comments', () => {
   })
 
   it('should be able to fetch question comments', async () => {
-    const author = makeStudent({})
+    const author = makeStudent({
+      name: 'John Doe',
+    })
     inMemoryStudentsRepository.items.push(author)
 
     const comment1 = makeQuestionComment({
@@ -51,22 +53,30 @@ describe('Fetch Question Comments', () => {
     expect(result.value?.comments).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          id: comment1.id,
+          commentId: comment1.id,
+          author: 'John Doe',
         }),
         expect.objectContaining({
-          id: comment2.id,
+          commentId: comment2.id,
+          author: 'John Doe',
         }),
         expect.objectContaining({
-          id: comment3.id,
+          commentId: comment3.id,
+          author: 'John Doe',
         }),
       ]),
     )
   })
 
   it('should be able to fetch paginated question comments', async () => {
+    const author = makeStudent({})
+    inMemoryStudentsRepository.items.push(author)
     for (let i = 1; i <= 22; i++) {
       await inMemoryQuestionCommentsRepository.create(
-        makeQuestionComment({ questionId: new UniqueEntityID('question-1') }),
+        makeQuestionComment({
+          questionId: new UniqueEntityID('question-1'),
+          authorId: author.id,
+        }),
       )
     }
 
