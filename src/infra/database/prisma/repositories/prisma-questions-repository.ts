@@ -4,6 +4,7 @@ import { QuestionAttachmentsRepository } from '@/domain/forum/application/reposi
 import { QuestionsRepository } from '@/domain/forum/application/repositories/questions-repository'
 import { Question } from '@/domain/forum/enterprise/entities/question'
 import { QuestionDetails } from '@/domain/forum/enterprise/entities/value-objects/question-details'
+import { CacheRepository } from '@/infra/cache/cache-repository'
 import { Injectable } from '@nestjs/common'
 import { PrismaQuestionDetailsMapper } from '../mappers/prisma-question-details-mapper'
 import { PrismaQuestionMapper } from '../mappers/prisma-question-mapper'
@@ -14,6 +15,7 @@ export class PrismaQuestionsRepository implements QuestionsRepository {
   constructor(
     private readonly prisma: PrismaService,
     private questionAttachmentsRepository: QuestionAttachmentsRepository,
+    private cache: CacheRepository,
   ) {}
 
   async create(question: Question): Promise<void> {
@@ -46,19 +48,34 @@ export class PrismaQuestionsRepository implements QuestionsRepository {
       this.questionAttachmentsRepository.deleteMany(
         question.attachments.getRemovedItems(),
       ),
+      this.cache.delete(`question:${question.slug}:details`),
     ])
 
     DomainEvents.dispatchEventsForAggregate(question.id)
   }
 
   async findBySlug(slug: string): Promise<Question | null> {
+    const cacheHit = await this.cache.get(`question:${slug}:details`)
+
+    if (cacheHit) {
+      const cachedQuestion = JSON.parse(cacheHit)
+      return cachedQuestion
+    }
+
     const question = await this.prisma.question.findUnique({
       where: { slug },
     })
 
     if (!question) return null
 
-    return PrismaQuestionMapper.toDomain(question)
+    const questionDetails = PrismaQuestionMapper.toDomain(question)
+
+    await this.cache.set(
+      `question:${slug}:details`,
+      JSON.stringify(questionDetails),
+    )
+
+    return questionDetails
   }
 
   async findDetailsBySlug(slug: string): Promise<QuestionDetails | null> {
