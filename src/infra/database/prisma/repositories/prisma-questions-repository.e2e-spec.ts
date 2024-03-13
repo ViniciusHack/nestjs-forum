@@ -11,7 +11,7 @@ import { QuestionAttachmentFactory } from 'test/factories/make-question-attachme
 import { StudentFactory } from 'test/factories/make-student'
 import { PrismaQuestionsRepository } from './prisma-questions-repository'
 
-describe('Get Question By Slug (E2E)', () => {
+describe('Prisma questions repository (E2E)', () => {
   let app: INestApplication
   let studentFactory: StudentFactory
   let questionFactory: QuestionFactory
@@ -87,14 +87,21 @@ describe('Get Question By Slug (E2E)', () => {
 
     await cacheRepository.set(
       `question:${question.slug.value}:details`,
-      JSON.stringify({ empty: true }),
+      JSON.stringify({
+        attachments: [],
+        author: { name: 'Fake name' },
+      }),
     )
 
     const questionDetails = await questionsRepository.findDetailsBySlug(
       question.slug.value,
     )
 
-    expect(questionDetails).toEqual({ empty: true })
+    expect(questionDetails).toEqual(
+      expect.objectContaining({
+        author: 'Fake name',
+      }),
+    )
   })
 
   it('should be able to reset cached question details on save', async () => {
