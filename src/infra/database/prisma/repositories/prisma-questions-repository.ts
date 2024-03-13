@@ -69,7 +69,7 @@ export class PrismaQuestionsRepository implements QuestionsRepository {
 
     if (cacheHit) {
       const cachedQuestion = JSON.parse(cacheHit)
-      return cachedQuestion
+      return PrismaQuestionDetailsMapper.toDomain(cachedQuestion)
     }
 
     const question = await this.prisma.question.findUnique({
